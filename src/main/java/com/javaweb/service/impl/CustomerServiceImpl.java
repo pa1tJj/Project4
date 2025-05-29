@@ -1,7 +1,6 @@
 package com.javaweb.service.impl;
 
-import com.javaweb.converter.CustomerDTOConverter;
-import com.javaweb.converter.CustomerEntityConverter;
+import com.javaweb.converter.CustomerConverter;
 import com.javaweb.entity.CustomerEntity;
 import com.javaweb.entity.UserEntity;
 import com.javaweb.model.dto.AssignmentCustomerDTO;
@@ -27,10 +26,7 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private CustomerDTOConverter customerDTOConverter;
-
-    @Autowired
-    private CustomerEntityConverter customerEntityConverter;
+    private CustomerConverter customerConverter;
 
     @Autowired
     private UserRepository userRepository;
@@ -63,7 +59,7 @@ public class CustomerServiceImpl implements CustomerService {
         List<CustomerSearchResponse> customerSearchResponseList = new ArrayList<>();
         List<CustomerEntity> customerEntities = customerRepository.findCustomers(customerSearchRequest);
         for(CustomerEntity customerEntity : customerEntities) {
-            CustomerSearchResponse customerSearchResponse = customerEntityConverter.convertCustomerEntityToCustomerSearchResponse(customerEntity);
+            CustomerSearchResponse customerSearchResponse = customerConverter.convertCustomerEntityToCustomerSearchResponse(customerEntity);
             customerSearchResponseList.add(customerSearchResponse);
         }
         return customerSearchResponseList;
@@ -71,14 +67,19 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void addOrUpdateCustomer(CustomerDTO customerDTO) {
-        CustomerEntity customerEntity = customerDTOConverter.convertCustomerDTOToCustomerEntity(customerDTO);
+        CustomerEntity customerEntity = customerConverter.convertCustomerDTOToCustomerEntity(customerDTO);
+        if(customerDTO.getId() != null) {
+            CustomerEntity oldCustomerEntity = customerRepository.findById(customerDTO.getId()).get();
+            customerEntity.setCreatedDate(oldCustomerEntity.getCreatedDate());
+            customerEntity.setCreatedBy(oldCustomerEntity.getCreatedBy());
+        }
         customerRepository.save(customerEntity);
     }
 
     @Override
     public CustomerSearchResponse findCustomerById(Long id) {
         CustomerEntity customerEntity = customerRepository.findById(id).get();
-        CustomerSearchResponse customerSearchResponse = customerEntityConverter.convertCustomerEntityToCustomerSearchResponse(customerEntity);
+        CustomerSearchResponse customerSearchResponse = customerConverter.convertCustomerEntityToCustomerSearchResponse(customerEntity);
         return customerSearchResponse;
     }
 
@@ -95,7 +96,13 @@ public class CustomerServiceImpl implements CustomerService {
     public void deleteCustomer(List<Long> ids) {
         if(ids != null || !ids.isEmpty()) {
 //            customerRepository.deleteByIdIn(ids);
-            customerRepository.deleteCustomers(ids);
+//            customerRepository.deleteCustomers(ids);
+            for(Long id : ids) {
+                CustomerEntity customerEntity = customerRepository.findById(id).get();
+                customerEntity.setActive(0L);
+                customerRepository.save(customerEntity);
+            }
+
         }
     }
 

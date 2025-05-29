@@ -30,18 +30,13 @@ public class BuildingServiceImpl implements BuildingService {
     private BuildingRepository buildingRepository;
 
     @Autowired
-    private BuildingSearchReponseDTOConverter buildingSearchReponseDTOConverter;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private BuildingDTOConverter buildingDTOConverter;
+    private UploadFileUtils uploadFileUtils;
 
     @Autowired
-    private BuildingEntityConverter buildingEntityConverter;
-    @Autowired
-    private UploadFileUtils uploadFileUtils;
+    private BuildingConverter buildingConverter;
 
     @Override
     public ResponseDTO listStaffs(Long buildingId) {
@@ -71,7 +66,7 @@ public class BuildingServiceImpl implements BuildingService {
         List<BuildingEntity> buildingEntities = buildingRepository.findBuildings(buildingSearchRequest);
         List<BuildingSearchResponse> result = new ArrayList<>();
         for(BuildingEntity item : buildingEntities) {
-            BuildingSearchResponse buildingSearchResponse = buildingSearchReponseDTOConverter.toBuildingSearchReponse(item);
+            BuildingSearchResponse buildingSearchResponse = buildingConverter.toBuildingSearchReponse(item);
             result.add(buildingSearchResponse);
         }
         return result;
@@ -79,7 +74,7 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public void addOrUpdateBuilding(BuildingDTO buildingDTO) {
-        BuildingEntity buildingEntity = buildingDTOConverter.toBuildingDTO(buildingDTO);
+        BuildingEntity buildingEntity = buildingConverter.toBuildingDTO(buildingDTO);
 //        if(buildingDTO.getId() != null) {
 //            BuildingEntity foundBuilding = buildingRepository.findById(buildingDTO.getId())
 //                    .orElseThrow(() -> new NotFoundException("building not found"));
@@ -107,7 +102,7 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public BuildingDTO findByIdAndResponse(Long id) {
         BuildingEntity buildingEntity = buildingRepository.findById(id).get();
-        BuildingDTO buildingDTO = buildingEntityConverter.changeBuildingDTO(buildingEntity);
+        BuildingDTO buildingDTO = buildingConverter.changeBuildingDTO(buildingEntity);
         return buildingDTO;
     }
 

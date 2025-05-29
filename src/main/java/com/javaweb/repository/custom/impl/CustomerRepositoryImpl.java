@@ -65,6 +65,7 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
     @Override
     public void deleteCustomers(List<Long> ids) {
         for(Long id : ids) {
+            //ver 1:
             StringBuilder sql = new StringBuilder("UPDATE customer SET is_active = 0 WHERE id =  " + id);
             Query query =  entityManager.createNativeQuery(sql.toString(), CustomerEntity.class);
             query.executeUpdate();

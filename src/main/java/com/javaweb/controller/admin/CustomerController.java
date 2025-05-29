@@ -41,8 +41,6 @@ public class CustomerController {
         } else {
             mav.addObject("customerList", customerService.findCustomers(customerSearchRequest));//nếu MANAGER đăng nhập thì hiển hiển thị tất cả tòa nhà
         }
-//        List<CustomerSearchResponse> customerList = customerService.findCustomers(customerSearchRequest);
-//        mav.addObject("customerList", customerList);
 
         mav.addObject("listStaffs", userService.getStaffs());
         return mav;

@@ -1,12 +1,13 @@
 package com.javaweb.service.impl;
 
-import com.javaweb.converter.TransactionDTOConverter;
-import com.javaweb.converter.TransactionEntityConverter;
+import com.javaweb.converter.TransactionConverter;
+import com.javaweb.entity.CustomerEntity;
 import com.javaweb.entity.TransactionEntity;
 import com.javaweb.model.dto.TransactionDTO;
 import com.javaweb.model.response.ResponseDTO;
 import com.javaweb.model.response.TransactionDetailResponse;
 import com.javaweb.model.response.TransactionResponse;
+import com.javaweb.repository.CustomerRepository;
 import com.javaweb.repository.TransactionRepository;
 import com.javaweb.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +23,19 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
     @Autowired
-    private TransactionEntityConverter transactionEntityConverter;
+    private TransactionConverter transactionConverter;
+
     @Autowired
-    private TransactionDTOConverter transactionDTOConverter;
+    private CustomerRepository customerRepository;
 
     @Override
     public List<TransactionResponse> findByCodeAndCustomerId(String code, Long customerId) {
         List<TransactionEntity> transactionEntities = transactionRepository.findByCodeAndCustomer_Id(code, customerId);
         List<TransactionResponse> responses = new ArrayList<>();
         for (TransactionEntity transactionEntity : transactionEntities) {
-            TransactionResponse transactionDetailResponse = transactionEntityConverter.convertToTransactionResponse(transactionEntity);
+            TransactionResponse transactionDetailResponse = transactionConverter.convertToTransactionResponse(transactionEntity);
             responses.add(transactionDetailResponse);
         }
         return responses;
@@ -40,7 +43,14 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void addOrUpdateTransaction(TransactionDTO transactionDTO) {
-        TransactionEntity transactionEntity = transactionDTOConverter.converterToTransactionEntity(transactionDTO);
+        TransactionEntity transactionEntity = transactionConverter.converterToTransactionEntity(transactionDTO);
+        CustomerEntity customerEntity = customerRepository.findById(transactionDTO.getCustomerId()).get();
+        transactionEntity.setCustomer(customerEntity);
+        if(transactionDTO.getId() != null) {
+            TransactionEntity oldTransactionEntity = transactionRepository.findById(transactionDTO.getId()).get();
+            transactionEntity.setCreatedDate(oldTransactionEntity.getCreatedDate());
+            transactionEntity.setCreatedBy(oldTransactionEntity.getCreatedBy());
+        }
         transactionRepository.save(transactionEntity);
     }
 

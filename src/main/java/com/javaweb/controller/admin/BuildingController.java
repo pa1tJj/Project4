@@ -34,9 +34,6 @@ public class BuildingController {
         } else {
             mav.addObject("buildingList", buildingService.findBuildings(buildingSearchRequest));//nếu MANAGER đăng nhập thì hiển hiển thị tất cả tòa nhà
         }
-        //sau khi xuống DB và lấy dữ liệu thành công
-//        List<BuildingSearchResponse> responseList = buildingService.findBuildings(buildingSearchRequest);
-//        mav.addObject("buildingList", responseList);
 
         mav.addObject("listStaff", userService.getStaffs());
         mav.addObject("districts", districtCode.type());
