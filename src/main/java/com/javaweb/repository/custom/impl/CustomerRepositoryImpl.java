@@ -4,6 +4,7 @@ import com.javaweb.entity.CustomerEntity;
 import com.javaweb.entity.UserEntity;
 import com.javaweb.model.request.BuildingSearchRequest;
 import com.javaweb.model.request.CustomerSearchRequest;
+import com.javaweb.model.response.CustomerSearchResponse;
 import com.javaweb.repository.CustomerRepository;
 import com.javaweb.repository.custom.CustomerRepositoryCustom;
 
@@ -70,5 +71,17 @@ public class CustomerRepositoryImpl implements CustomerRepositoryCustom {
             Query query =  entityManager.createNativeQuery(sql.toString(), CustomerEntity.class);
             query.executeUpdate();
         }
+    }
+
+    @Override
+    public int countTotalItem(CustomerSearchResponse customerSearchResponse) {
+        String sql = buildQueryFilter(customerSearchResponse.getId());
+        Query query = entityManager.createNativeQuery(sql);
+        return query.getResultList().size();
+    }
+
+    private String buildQueryFilter(Long id) {
+        String sql = "SELECT *FROM customer c WHERE c.id =" + id;
+        return sql;
     }
 }

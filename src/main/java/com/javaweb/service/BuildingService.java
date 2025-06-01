@@ -5,13 +5,14 @@ import com.javaweb.model.dto.BuildingDTO;
 import com.javaweb.model.request.BuildingSearchRequest;
 import com.javaweb.model.response.BuildingSearchResponse;
 import com.javaweb.model.response.ResponseDTO;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface BuildingService {
     ResponseDTO listStaffs(Long buildingId);
 
-    public List<BuildingSearchResponse> findBuildings(BuildingSearchRequest buildingSearchRequest);
+    public List<BuildingSearchResponse> findBuildings(BuildingSearchRequest buildingSearchRequest, Pageable pageable);
 
     public void addOrUpdateBuilding(BuildingDTO buildingDTO);
 
@@ -21,4 +22,5 @@ public interface BuildingService {
 
     public void assignmentBuildingForStaff(AssignmentBuildingDTO assignmentBuildingDTO);
 
+    public  int countTotalItems(List<BuildingSearchResponse> buildingSearchResponses);
 }

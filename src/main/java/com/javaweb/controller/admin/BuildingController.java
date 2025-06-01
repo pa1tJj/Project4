@@ -9,6 +9,8 @@ import com.javaweb.security.utils.SecurityUtils;
 import com.javaweb.service.BuildingService;
 import com.javaweb.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,9 +32,17 @@ public class BuildingController {
         if(SecurityUtils.getAuthorities().contains("ROLE_STAFF")) {
             Long staffId = SecurityUtils.getPrincipal().getId();
             buildingSearchRequest.setStaffId(staffId);
-            mav.addObject("buildingList", buildingService.findBuildings(buildingSearchRequest));
+            List<BuildingSearchResponse> buildings = buildingService.findBuildings(buildingSearchRequest, PageRequest.of(buildingSearchRequest.getPage() - 1, buildingSearchRequest.getMaxPageItems()));
+            BuildingSearchResponse buildingSearchResponse = new BuildingSearchResponse();
+            buildingSearchResponse.setListResult(buildings);
+            buildingSearchResponse.setTotalItems(buildingService.countTotalItems(buildings));
+            mav.addObject("buildingList", buildingSearchResponse);
         } else {
-            mav.addObject("buildingList", buildingService.findBuildings(buildingSearchRequest));//nếu MANAGER đăng nhập thì hiển hiển thị tất cả tòa nhà
+            List<BuildingSearchResponse> buildings = buildingService.findBuildings(buildingSearchRequest, PageRequest.of(buildingSearchRequest.getPage() - 1, buildingSearchRequest.getMaxPageItems()));
+            BuildingSearchResponse buildingSearchResponse = new BuildingSearchResponse();
+            buildingSearchResponse.setListResult(buildings);
+            buildingSearchResponse.setTotalItems(buildingService.countTotalItems(buildings));
+            mav.addObject("buildingList", buildingSearchResponse);
         }
 
         mav.addObject("listStaff", userService.getStaffs());

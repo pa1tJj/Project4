@@ -6,6 +6,7 @@ import com.javaweb.entity.UserEntity;
 import com.javaweb.model.dto.AssignmentCustomerDTO;
 import com.javaweb.model.dto.CustomerDTO;
 import com.javaweb.model.request.CustomerSearchRequest;
+import com.javaweb.model.response.BuildingSearchResponse;
 import com.javaweb.model.response.CustomerSearchResponse;
 import com.javaweb.model.response.ResponseDTO;
 import com.javaweb.model.response.StaffResponseDTO;
@@ -13,6 +14,7 @@ import com.javaweb.repository.CustomerRepository;
 import com.javaweb.repository.UserRepository;
 import com.javaweb.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -55,7 +57,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerSearchResponse> findCustomers(CustomerSearchRequest customerSearchRequest) {
+    public List<CustomerSearchResponse> findCustomers(CustomerSearchRequest customerSearchRequest, Pageable pageable) {
         List<CustomerSearchResponse> customerSearchResponseList = new ArrayList<>();
         List<CustomerEntity> customerEntities = customerRepository.findCustomers(customerSearchRequest);
         for(CustomerEntity customerEntity : customerEntities) {
@@ -104,6 +106,15 @@ public class CustomerServiceImpl implements CustomerService {
             }
 
         }
+    }
+
+    @Override
+    public int countTotalItems(List<CustomerSearchResponse> customerSearchResponses) {
+        int totalItems = 0;
+        for(CustomerSearchResponse item : customerSearchResponses) {
+            totalItems += customerRepository.countTotalItem(item);
+        }
+        return totalItems;
     }
 
 }

@@ -14,6 +14,7 @@ import com.javaweb.repository.UserRepository;
 import com.javaweb.service.BuildingService;
 import com.javaweb.utils.UploadFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -62,8 +63,8 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public List<BuildingSearchResponse> findBuildings(BuildingSearchRequest buildingSearchRequest) {
-        List<BuildingEntity> buildingEntities = buildingRepository.findBuildings(buildingSearchRequest);
+    public List<BuildingSearchResponse> findBuildings(BuildingSearchRequest buildingSearchRequest, Pageable pageable) {
+        List<BuildingEntity> buildingEntities = buildingRepository.findBuildings(buildingSearchRequest, pageable);
         List<BuildingSearchResponse> result = new ArrayList<>();
         for(BuildingEntity item : buildingEntities) {
             BuildingSearchResponse buildingSearchResponse = buildingConverter.toBuildingSearchReponse(item);
@@ -120,4 +121,14 @@ public class BuildingServiceImpl implements BuildingService {
         buildingEntity.setUserEntities(staffs);
         buildingRepository.save(buildingEntity);
     }
+
+    @Override
+    public int countTotalItems(List<BuildingSearchResponse> buildingSearchResponses) {
+        int totalItems = 0;
+        for (BuildingSearchResponse item : buildingSearchResponses) {
+            totalItems += buildingRepository.countTotalItem(item);
+        }
+        return totalItems;
+    }
+
 }

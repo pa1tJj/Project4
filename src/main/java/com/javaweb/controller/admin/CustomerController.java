@@ -9,6 +9,7 @@ import com.javaweb.service.CustomerService;
 import com.javaweb.service.IUserService;
 import com.javaweb.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,9 +38,17 @@ public class CustomerController {
         if(SecurityUtils.getAuthorities().contains("ROLE_STAFF")) {
             Long staffId = SecurityUtils.getPrincipal().getId();
             customerSearchRequest.setStaffId(staffId);
-            mav.addObject("customerList", customerService.findCustomers(customerSearchRequest));
+            List<CustomerSearchResponse> customers = customerService.findCustomers(customerSearchRequest, PageRequest.of(customerSearchRequest.getPage() -1, customerSearchRequest.getMaxPageItems()));
+            CustomerSearchResponse customerSearchResponse = new CustomerSearchResponse();
+            customerSearchResponse.setListResult(customers);
+            customerSearchResponse.setTotalItems(customerService.countTotalItems(customers));
+            mav.addObject("customerList", customerSearchResponse);
         } else {
-            mav.addObject("customerList", customerService.findCustomers(customerSearchRequest));//nếu MANAGER đăng nhập thì hiển hiển thị tất cả tòa nhà
+            List<CustomerSearchResponse> customers = customerService.findCustomers(customerSearchRequest, PageRequest.of(customerSearchRequest.getPage() -1, customerSearchRequest.getMaxPageItems()));
+            CustomerSearchResponse customerSearchResponse = new CustomerSearchResponse();
+            customerSearchResponse.setListResult(customers);
+            customerSearchResponse.setTotalItems(customerService.countTotalItems(customers));
+            mav.addObject("customerList", customerSearchResponse);
         }
 
         mav.addObject("listStaffs", userService.getStaffs());

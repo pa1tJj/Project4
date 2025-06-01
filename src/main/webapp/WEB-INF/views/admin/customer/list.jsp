@@ -1,11 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: PHAN ANH TUAN
-  Date: 5/23/2025
-  Time: 8:42 AM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/common/taglib.jsp" %>
 <c:url var="customerURL" value="/admin/customer-list"/>
@@ -143,72 +136,59 @@
         <!-- bảng danh sách -->
         <div class="row">
             <div class="col-xs-12">
-                <table id="tableList" style="margin: 3em 0 0;"
+                <table style="margin: 3em 0 0;"
                        class="table table-striped table-bordered table-hover">
                     <thead>
-                    <tr>
-                        <th class="center">
-                            <label class="pos-rel">
-                                <input type="checkbox" class="ace" value="" name="checkList">
-                                <span class="lbl"></span>
-                            </label>
-                        </th>
-                        <th>Tên khách hàng</th>
-                        <th>Di động</th>
-                        <th>Email</th>
-                        <th>Nhu cầu</th>
-                        <th>Người thêm</th>
-                        <th>Ngày thêm</th>
-                        <th>Tình trạng</th>
-                        <th>Thao tác</th>
-                    </tr>
                     </thead>
+<%--                    <tbody>--%>
 
-                    <tbody>
-                    <c:forEach var="item" items="${customerList}">
-                        <tr>
-                            <td class="center">
-                                <label class="pos-rel">
-                                    <input type="checkbox" class="ace" name="checkList" value="${item.id}">
-                                    <span class="lbl"></span>
-                                </label>
-                            </td>
-
-                            <td>${item.fullName}</td>
-                            <td>${item.phone}</td>
-                            <td>${item.email}</td>
-                            <td>${item.demand}</td>
-                            <td>${item.createdBy}</td>
-                            <td>${item.createdDate}</td>
-                            <td>${item.status}</td>
-
-                            <td>
-                                <div class="hidden-sm hidden-xs btn-group">
+                        <form:form modelAttribute="customerList" method="GET">
+                            <display:table name="customerList.listResult" cellspacing="0" cellpadding="0"
+                                           requestURI="${customerURL}" partialList="true" sort="external"
+                                           size="${customerList.totalItems}" defaultsort="2" defaultorder="ascending"
+                                           id="tableList" pagesize="${customerList.maxPageItems}"
+                                           export="false"
+                                           class="table table-fcv-ace table-striped table-bordered table-hover dataTable no-footer"
+                                           style="margin: 3em 0 1.5em;">
+                                <display:column title="<fieldset class='form-group'>
+										    <input type='checkbox' id='checkAll' class='check-box-element'>
+											</fieldset>" class="center select-cell"
+                                                headerClass="center select-cell">
+                                    <fieldset>
+                                        <input type="checkbox" name="checkList" value="${tableList.id}"
+                                               id="checkbox_${tableList.id}" class="check-box-element"/>
+                                    </fieldset>
+                                </display:column>
+                                <display:column headerClass="text-left" property="fullName" title="Tên khách hàng"/>
+                                <display:column headerClass="text-left" property="phone" title="Di động"/>
+                                <display:column headerClass="text-left" property="email" title="Email"/>
+                                <display:column headerClass="text-left" property="demand" title="Nhu cầu"/>
+                                <display:column headerClass="text-left" property="createdBy" title="Người thêm"/>
+                                <display:column headerClass="text-left" property="createdDate" title="Ngày thêm"/>
+                                <display:column headerClass="text-left" property="status" title="Tình trạng"/>
+                                <display:column headerClass="col-actions" title="Thao tác">
                                     <security:authorize access="hasRole('MANAGER')">
-                                        <button class="btn btn-xs btn-success" title="giao khách hàng"
-                                                onclick="assignmentCustomer(${item.id})">
+                                        <a class="btn btn-xs btn-success" title="giao khách hàng"
+                                                onclick="assignmentCustomer(${tableList.id})">
                                             <i class="ace-icon glyphicon glyphicon-list"></i>
-                                        </button>
+                                        </a>
                                     </security:authorize>
 
                                     <a class="btn btn-xs btn-info" title="sửa khách hàng"
-                                       href="/admin/customer-edit-${item.id}" onclick="">
+                                       href="/admin/customer-edit-${tableList.id}" onclick="">
                                         <i class="ace-icon fa fa-pencil bigger-120"></i>
                                     </a>
 
                                     <security:authorize access="hasRole('MANAGER')">
                                         <button class="btn btn-xs btn-danger" title="xóa khách hàng"
-                                                onclick="deleteCustomer(${item.id})">
+                                                onclick="deleteCustomer(${tableList.id})">
                                             <i class="ace-icon fa fa-trash-o bigger-120"></i>
                                         </button>
                                     </security:authorize>
-                                </div>
-
-                            </td>
-                        </tr>
-                    </c:forEach>
-
-                    </tbody>
+                                </display:column>
+                            </display:table>
+                        </form:form>
+<%--                    </tbody>--%>
                 </table>
             </div><!-- /.span -->
         </div>
@@ -325,8 +305,6 @@
     //xử lý xóa một lúc nhiều khách hàng
     $('#btnDeleteCustomer').click(function (e) {
         e.preventDefault();
-        var data = {};
-        data['customerId'] = $('#customerId').val();
         var customerIds = $('#tableList').find('tbody input[type = checkbox]:checked').map(function () {
             return $(this).val();
         }).get();
