@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: PHAN ANH TUAN
-  Date: 5/3/2025
-  Time: 3:43 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@include file="/common/taglib.jsp" %>
 <c:url var="buildingAPI" value="/api/building"/>
