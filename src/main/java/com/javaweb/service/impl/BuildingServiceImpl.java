@@ -14,6 +14,7 @@ import com.javaweb.repository.UserRepository;
 import com.javaweb.service.BuildingService;
 import com.javaweb.utils.UploadFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +63,7 @@ public class BuildingServiceImpl implements BuildingService {
     }
 
     @Override
-    public List<BuildingSearchResponse> findBuildings(BuildingSearchRequest buildingSearchRequest) {
+    public List<BuildingSearchResponse> findBuildings(BuildingSearchRequest buildingSearchRequest, Pageable pageable) {
         List<BuildingEntity> buildingEntities = buildingRepository.findBuildings(buildingSearchRequest);
         List<BuildingSearchResponse> result = new ArrayList<>();
         for(BuildingEntity item : buildingEntities) {
@@ -75,29 +76,29 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public void addOrUpdateBuilding(BuildingDTO buildingDTO) {
         BuildingEntity buildingEntity = buildingConverter.toBuildingDTO(buildingDTO);
-//        if(buildingDTO.getId() != null) {
-//            BuildingEntity foundBuilding = buildingRepository.findById(buildingDTO.getId())
-//                    .orElseThrow(() -> new NotFoundException("building not found"));
-//            buildingEntity.setImage(foundBuilding.getImage());
-//        }
-//        saveThumbnail(buildingDTO, buildingEntity);
+        if(buildingDTO.getId() != null) {
+            BuildingEntity foundBuilding = buildingRepository.findById(buildingDTO.getId())
+                    .orElseThrow(() -> new NotFoundException("building not found"));
+            buildingEntity.setImage(foundBuilding.getImage());
+        }
+        saveThumbnail(buildingDTO, buildingEntity);
         buildingRepository.save(buildingEntity);
     }
 
-//    private void saveThumbnail(BuildingDTO buildingDTO, BuildingEntity buildingEntity) {
-//        String path = "/building/" + buildingDTO.getImage();
-//        if(null != buildingDTO.getImageBase64()) {
-//            if(null != buildingEntity.getImage()){
-//                if(!path.equals(buildingEntity.getImage())) {
-//                    File file = new File("D::/BackendJava/" + buildingEntity.getImage());
-//                    file.delete();
-//                }
-//            }
-//            byte[] bytes = Base64.decodeBase64(buildingDTO.getImageBase64().getBytes());
-//            uploadFileUtils.writeOrUpdate(path, bytes);
-//            buildingEntity.setImage(path);
-//        }
-//    }
+    private void saveThumbnail(BuildingDTO buildingDTO, BuildingEntity buildingEntity) {
+        String path = "/building/" + buildingDTO.getImageName();
+        if(null != buildingDTO.getImageBase64()) {
+            if(null != buildingEntity.getImage()){
+                if(!path.equals(buildingEntity.getImage())) {
+                    File file = new File("D::/BackendJava/" + buildingEntity.getImage());
+                    file.delete();
+                }
+            }
+            byte[] bytes = Base64.getDecoder().decode(buildingDTO.getImageBase64().getBytes());
+            uploadFileUtils.writeOrUpdate(path, bytes);
+            buildingEntity.setImage(path);
+        }
+    }
 
     @Override
     public BuildingDTO findByIdAndResponse(Long id) {
@@ -119,5 +120,14 @@ public class BuildingServiceImpl implements BuildingService {
         List<UserEntity> staffs = userRepository.findByIdIn(assignmentBuildingDTO.getStaffs());
         buildingEntity.setUserEntities(staffs);
         buildingRepository.save(buildingEntity);
+    }
+
+    @Override
+    public int countTotalItems(List<BuildingSearchResponse> buildingSearchResponses) {
+        int totalItems = 0;
+        for (BuildingSearchResponse item : buildingSearchResponses) {
+            totalItems += buildingRepository.countTotalItem(item);
+        }
+        return totalItems;
     }
 }

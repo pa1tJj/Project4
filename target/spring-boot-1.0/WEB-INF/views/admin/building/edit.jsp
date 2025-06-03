@@ -216,12 +216,10 @@
                                     <div class="col-xs-9">
                                         <c:if test="${not empty buildingEdit.image}">
                                             <c:set var="imagePath" value="/repository${buildingEdit.image}"/>
-                                            <img src="${imagePath}" id="viewImage" width="300px" height="300px"
-                                                 style="">
+                                            <img src="${imagePath}" id="viewImage" width="300px" height="300px" style="">
                                         </c:if>
                                         <c:if test="${empty buildingEdit.image}">
-                                            <img src="/admin/image/" id="viewImage" width="300px" height="300px"
-                                                 style="">
+                                            <img src="" id="viewImage" width="300px" height="300px" style="">
                                         </c:if>
                                     </div>
                                 </dl>
@@ -255,12 +253,8 @@
             </div><!-- /.page-content -->
         </div>
     </div><!-- /.main-content -->
-
-
-    <%--    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">--%>
-    <%--        <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>--%>
-    <%--    </a>--%>
 </div><!-- /.main-container -->
+
 <script>
     $('#btnAddOrUpdateBuilding').click(function () {
         var data = {};
@@ -281,7 +275,6 @@
         $('#loading_image').show();
         if (data['name'] != '') {
             addOrUpdateBuilding(data);
-            myConfirm();
         } else {
             window.location.href = "<c:url value="/admin/building-edit?typeCode=required"/>";
         }
@@ -294,9 +287,9 @@
             url: "${buildingAPI}",
             data: JSON.stringify(data),
             contentType: "application/JSON",
-            dataType: 'json',
+            // dataType: 'json',
             success: function (respond) {
-                console.log("success");
+                alert("success");
             },
             error: function (respond) {
                 console.log("failed");
@@ -333,9 +326,6 @@
         openImage(this, "viewImage");
     });
 
-    function myConfirm() {
-        confirm("success");
-    }
 </script>
 </body>
 </html>

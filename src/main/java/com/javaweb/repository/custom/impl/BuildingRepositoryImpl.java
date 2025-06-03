@@ -2,6 +2,7 @@ package com.javaweb.repository.custom.impl;
 
 import com.javaweb.entity.BuildingEntity;
 import com.javaweb.model.request.BuildingSearchRequest;
+import com.javaweb.model.response.BuildingSearchResponse;
 import com.javaweb.repository.custom.BuildingRepositoryCustom;
 import org.springframework.stereotype.Repository;
 
@@ -91,5 +92,17 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         sql.append(where);
         Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
         return query.getResultList();
+    }
+
+    @Override
+    public int countTotalItem(BuildingSearchResponse buildingSearchResponse) {
+        String sql = buildQueryFilter(buildingSearchResponse.getId());
+        Query query = entityManager.createNativeQuery(sql);
+        return query.getResultList().size();
+    }
+
+    private String buildQueryFilter(Long id) {
+        String sql = "SELECT *FROM building b WHERE b.id =" + id;
+        return sql;
     }
 }
