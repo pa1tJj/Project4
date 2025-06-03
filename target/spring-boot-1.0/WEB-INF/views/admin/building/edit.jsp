@@ -49,7 +49,7 @@
                 <div class="row" style="font-family: 'Times New Roman', Times, serif;">
                     <form:form modelAttribute="buildingEdit" id="listForm" method="GET">
                         <div class="col-xs-12">
-                            <form class="form-horizontal" role="form">
+                            <form class="form-horizontal" role="form" enctype="multipart/form-data">
                                 <dl class="form-group">
                                     <label class="col-xs-3">Tên tòa nhà</label>
                                     <div class="col-xs-9">
@@ -212,16 +212,15 @@
                                 </dl>
                                 <dl class="form-group">
                                     <label class="col-xs-3 no-padding-right">Ảnh tòa nhà</label>
-                                    <input class="col-xs-3 no-padding-right" type="file" id="uploadImage"/>
+                                    <input class="col-xs-3 no-padding-right" id="uploadImage" type="file"/>
                                     <div class="col-xs-9">
                                         <c:if test="${not empty buildingEdit.image}">
-                                            <c:set var="imagePath" value="/repository${buildingEdit.image}"/>
-                                            <img src="${imagePath}" id="viewImage" width="300px" height="300px"
-                                                 style="">
+                                            <c:set var="imagePath" value="/repositpry${buildingEdit.image}"/>
+                                            <img src="${imagePath}" id="viewImage" width="300px" height="300px">
                                         </c:if>
                                         <c:if test="${empty buildingEdit.image}">
-                                            <img src="/admin/image/" id="viewImage" width="300px" height="300px"
-                                                 style="">
+                                            <c:set var="imagePath" value="/repositpry${buildingEdit.image}"/>
+                                            <img src="" id="viewImage" width="300px" height="300px">
                                         </c:if>
                                     </div>
                                 </dl>
@@ -268,7 +267,7 @@
             } else {
                 typeCode.push(v.value);
             }
-            if (imageBase64 != '') {
+            if (imageBase64 !== '') {
                 data['imageBase64'] = imageBase64;
                 data['imageName'] = imageName;
             }
@@ -277,7 +276,6 @@
         $('#loading_image').show();
         if (data['name'] != '') {
             addOrUpdateBuilding(data);
-            myConfirm();
         } else {
             window.location.href = "<c:url value="/admin/building-edit?typeCode=required"/>";
         }

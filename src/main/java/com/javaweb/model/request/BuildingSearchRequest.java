@@ -1,6 +1,7 @@
 package com.javaweb.model.request;
 
 import com.javaweb.model.dto.AbstractDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class BuildingSearchRequest extends AbstractDTO {
     private String managerPhone;
     private Long staffId;
     private List<String> typeCode;
-
+    private MultipartFile multipartFile;
 
     public String getName() {
         return name;
@@ -149,5 +150,13 @@ public class BuildingSearchRequest extends AbstractDTO {
 
     public void setLevel(Long level) {
         this.level = level;
+    }
+
+    public MultipartFile getMultipartFile() {
+        return multipartFile;
+    }
+
+    public void setMultipartFile(MultipartFile multipartFile) {
+        this.multipartFile = multipartFile;
     }
 }

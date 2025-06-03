@@ -76,29 +76,29 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public void addOrUpdateBuilding(BuildingDTO buildingDTO) {
         BuildingEntity buildingEntity = buildingConverter.toBuildingDTO(buildingDTO);
-//        if(buildingDTO.getId() != null) {
-//            BuildingEntity foundBuilding = buildingRepository.findById(buildingDTO.getId())
-//                    .orElseThrow(() -> new NotFoundException("building not found"));
-//            buildingEntity.setImage(foundBuilding.getImage());
-//        }
-//        saveThumbnail(buildingDTO, buildingEntity);
+        if(buildingDTO.getId() != null) {
+            BuildingEntity foundBuilding = buildingRepository.findById(buildingDTO.getId())
+                    .orElseThrow(() -> new NotFoundException("building not found"));
+            buildingEntity.setImage(foundBuilding.getImage());
+        }
+        saveThumbnail(buildingDTO, buildingEntity);
         buildingRepository.save(buildingEntity);
     }
 
-//    private void saveThumbnail(BuildingDTO buildingDTO, BuildingEntity buildingEntity) {
-//        String path = "/building/" + buildingDTO.getImage();
-//        if(null != buildingDTO.getImageBase64()) {
-//            if(null != buildingEntity.getImage()){
-//                if(!path.equals(buildingEntity.getImage())) {
-//                    File file = new File("D::/BackendJava/" + buildingEntity.getImage());
-//                    file.delete();
-//                }
-//            }
-//            byte[] bytes = Base64.decodeBase64(buildingDTO.getImageBase64().getBytes());
-//            uploadFileUtils.writeOrUpdate(path, bytes);
-//            buildingEntity.setImage(path);
-//        }
-//    }
+    private void saveThumbnail(BuildingDTO buildingDTO, BuildingEntity buildingEntity) {
+        String path = "/building/" + buildingDTO.getImageName();
+        if(null != buildingDTO.getImageBase64()) {
+            if(null != buildingEntity.getImage()) {
+                if(!path.equals(buildingEntity.getImage())) {
+                    File file = new File("C://home/office" + buildingEntity.getImage());
+                    file.delete();
+                }
+            }
+            byte[] bytes = Base64.getDecoder().decode(buildingDTO.getImageBase64().getBytes());
+            uploadFileUtils.writeOrUpdate(path, bytes);
+            buildingEntity.setImage(path);
+        }
+    }
 
     @Override
     public BuildingDTO findByIdAndResponse(Long id) {
